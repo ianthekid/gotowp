@@ -3,6 +3,7 @@ Contributors : Brandon Muth,Syed Nazrul Hassan
 Tags         : GoToWebinar registration wordpress plugin
 Requires at least 3.2
 Tested Up To  :3.4.2
+Stable tag: 0.1
 
 Webinar registration plugin for registering to webinars from gotowebinar.com from any Wordpress post or page.
 
