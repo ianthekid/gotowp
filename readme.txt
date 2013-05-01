@@ -3,7 +3,7 @@ Contributors: Brandon Muth,Syed Nazrul Hassan
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
 Requires at least 3.2
 Tested Up To  :3.4.2
-Stable tag: 0.1
+Stable tag: 0.2
 
 GoToWP is a Wordpress plugin that allows users to register for your GoToWebinar webinars from any Wordpress post or page. 
 
