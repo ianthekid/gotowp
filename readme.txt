@@ -34,7 +34,7 @@ http://citrixonline-quick-oauth.herokuapp.com/   then choose the G2W OAuth Flow 
 
 
 Thank You Page
-This is a default Thank You Page
+You can redirect your site visitors to any page or post after they complete registration.
 
 ===Screenshots===
 1.png
@@ -42,5 +42,5 @@ This is a default Thank You Page
 3.png
 
 ===Support===
-For any assistance please visit http://www.gotowp.com/support
+For any assistance please visit http://wordpress.org/support/plugin/gotowp
 
