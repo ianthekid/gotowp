@@ -47,3 +47,7 @@ http://citrixonline-quick-oauth.herokuapp.com/   then choose the G2W OAuth Flow 
 
 == Support ==
 For any assistance please visit http://wordpress.org/support/plugin/gotowp
+
+== Changelog ==
+
+== Upgrade Notice ==
