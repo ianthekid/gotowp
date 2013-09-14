@@ -1,8 +1,9 @@
-== GoToWP ==
+=== GoToWP ===
 Contributors: brandonmuth,pankajagrawal
+Donate link: http://gotowp.com/
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
-Requires at least 3.2
-Tested Up To  :3.4.2
+Requires at least: 3.2
+Tested up to: 3.4.2
 Stable tag: 0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -45,5 +46,14 @@ http://citrixonline-quick-oauth.herokuapp.com/   then choose the G2W OAuth Flow 
 2. screenshot2
 3. screenshot3
 
-== Support ==
-For any assistance please visit http://wordpress.org/support/plugin/gotowp
+== Changelog ==
+
+= 1.0 =
+* A change since the previous version.
+* Another change.
+
+
+== Upgrade Notice ==
+
+= 1.0 =
+Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
