@@ -3,7 +3,7 @@
 Plugin Name: GoToWP Personal
 Plugin URI: http://www.gotowp.com/
 Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-Version: 1.0.2
+Version: 1.0.3
 Author: GoToWP.com
 Author URI:  http://www.gotowp.com/
 Support: http://www.gotowp.com/support
@@ -146,9 +146,9 @@ function add_freewebinardetails()
 </form>
 
 <table class="">
-	<tr><th colspan="2" class=""><?php _e('Sample Usage Shortcode'); ?></th></tr>
-    <tr>
-    <td  class="tableclass"><?php _e('On Registration Page'); ?></td>  <td><input style="width:650px;" type="text" size=40  value="[register_free_webinar webid=xxxxxxx pageid=xxx]" name="shortcode" /></td>
+	<tr style="width:500px;float:left;"><th colspan="2" class=""><?php _e('Sample Usage Shortcode'); ?></th></tr><br/>
+    <tr style="width:500px;float:left;">
+    <td  style="width:125px;float:left;" class="tableclass"><?php _e('On Registration Page'); ?></td>  <td><input style="width:650px;" type="text" size=40  value="[register_free_webinar webid=xxxxxxx pageid=xxx]" name="shortcode" /></td>
     
     </tr>
 
@@ -166,7 +166,7 @@ function registration_forms($atts)
 
 
 
-$output.='<form name="webinarregistration" id="webinarregistration" action="" method="post" >
+$output.='<form name="webinar_registration" id="webinar_registration" action="" method="post" >
 <style type="text/css">
 .error{ color:red;}
 .tableclass{width:125px;}
@@ -198,7 +198,7 @@ $output.=$webinarErrors->get_error_message('broke');
    $output.='
 <script type="text/javascript">
 jQuery(document).ready(function($){	
-	$("#webinarregistration").validate({
+	$("#webinar_registration").validate({
 		rules:  {
 					firstname   :{required:true},
 					lastname    :{required:true},			
