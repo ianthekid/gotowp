@@ -3,7 +3,7 @@
 Plugin Name: GoToWP Personal
 Plugin URI: http://www.gotowp.com/
 Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-Version: 1.0.1
+Version: 1.0.2
 Author: GoToWP.com
 Author URI:  http://www.gotowp.com/
 Support: http://www.gotowp.com/support
@@ -157,6 +157,7 @@ function add_freewebinardetails()
 </div>
 <?php	
 } 
+
 function registration_forms($atts)
 {		
 	global $webinarErrors;
@@ -175,20 +176,20 @@ $output.='<form name="webinarregistration" id="webinarregistration" action="" me
 <table class="tableborder">';
 
 $output.=$webinarErrors->get_error_message('broke');
-   $output.='<th colspan="2" class="tableheader">'._e('Register for a Webinar').'</th>
+   $output.='<th colspan="2" class="tableheader">Register for a Webinar</th>
     <tr>
-        <td >'._e('First Name').'</td><td><input type="text" size=20  name="firstname" id="firstname" /></td>
+        <td >First Name</td><td><input type="text" size=20  name="firstname" id="firstname" /></td>
     </tr>
     <tr>
-        <td >'._e('Last Name').' </td><td><input type="text" size=20  name="lastname"  id="lastname" /></td>
+        <td >Last Name </td><td><input type="text" size=20  name="lastname"  id="lastname" /></td>
     </tr>
     <tr>
-        <td >'._e('Email').'     </td><td><input type="text" size=20  name="email"     id="email" />
+        <td >Email</td><td><input type="text" size=20  name="email"     id="email" />
 		<input type="hidden" name="returnpageid"      value="'.$pageid.'" /><input type="hidden" name="webinarid"   value="'.$webid.'" /></td>
     </tr>
 
     <tr>
-        <td><input type="hidden" name="action" value="registerwebinars" /></td><td><input style="background:#629819; color:#ffffff; font-weight:bold;" type="submit" name="submit"  value="'. _e('Register Now').'"/></td>
+        <td><input type="hidden" name="action" value="registerwebinars" /></td><td><input style="background:#629819; color:#ffffff; font-weight:bold;" type="submit" name="submit"  value="Register Now"/></td>
     </tr>
     
 </table>
@@ -196,7 +197,7 @@ $output.=$webinarErrors->get_error_message('broke');
 
    $output.='
 <script type="text/javascript">
-jQuery(document).ready(function(){	
+jQuery(document).ready(function($){	
 	$("#webinarregistration").validate({
 		rules:  {
 					firstname   :{required:true},
@@ -210,6 +211,8 @@ jQuery(document).ready(function(){
 
 return $output;
 }
+
+
 /*UPDATING ADMIN SECTION SETTINGS TO OPTION TABLE*/
 if(isset($_POST['action']) && $_POST['action']=='savefreewebinar')
 {
