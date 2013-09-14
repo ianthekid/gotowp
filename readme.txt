@@ -40,7 +40,11 @@ Enter The Organizer Key  and Access Token  which can be obtained from online app
 http://citrixonline-quick-oauth.herokuapp.com/   then choose the G2W OAuth Flow login to your account and allow the app to access details of your account
 
 
+== Screenshots ==
 
+1. screenshot1
+2. screenshot2
+3. screenshot3
 
 == Changelog ==
 
