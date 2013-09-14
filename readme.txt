@@ -1,4 +1,4 @@
-== GoToWP ==
+=== GoToWP ===
 Contributors: brandonmuth,pankajagrawal
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
 Requires at least 3.2
