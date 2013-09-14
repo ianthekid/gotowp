@@ -11,7 +11,8 @@ GoToWP is a Wordpress plugin that allows users to register for your GoToWebinar 
 
 Our plugin integrates with GoToWebinar's API to automatically register your customers for upcoming webinars and send them a confirmation email specifying the details (time, link, description, etc) of your webinar! You can even redirect to individual thank you pages for each webinar.
 
-== Usage ==
+== Frequently Asked Questions ==
+
 You may use a shortcode like this 
 [register_free_webinar webid=7214273268860215552 pageid=14]
 
