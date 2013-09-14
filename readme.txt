@@ -1,5 +1,5 @@
 == GoToWP ==
-Contributors: Brandon Muth,Syed Nazrul Hassan
+Contributors: Brandon Muth,Syed Nazrul Hassan,pankajagrawal
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
 Requires at least 3.2
 Tested Up To  :3.4.2
