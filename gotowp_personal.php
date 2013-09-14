@@ -150,38 +150,44 @@ function add_freewebinardetails()
 function registration_forms($atts)
 {		
 	global $webinarErrors;
-	extract(shortcode_atts(array( 'webid'=>'','pageid'=>''), $atts));
-?>
-<form name="webinarregistration" id="webinarregistration" action="" method="post" >
+	extract(shortcode_atts(array( 'webid'=>'','pageid'=>''), $atts));	
+	$output='';
+
+
+
+$output.='<form name="webinarregistration" id="webinarregistration" action="" method="post" >
 <style type="text/css">
 .error{ color:red;}
 .tableclass{width:125px;}
 .tableborder{border: 1px solid #56B4EF;}
 .tableheader{background:#007FC8;color:#ffffff;}
 </style>
-<table class="tableborder">
-    <?php echo $webinarErrors->get_error_message('broke');?>
-    <th colspan="2" class="tableheader"><?php _e('Register for a Webinar'); ?></th>
+<table class="tableborder">';
+
+$output.=$webinarErrors->get_error_message('broke');
+   $output.='<th colspan="2" class="tableheader">'._e('Register for a Webinar').'</th>
     <tr>
-        <td ><?php _e('First Name'); ?></td><td><input type="text" size=20  name="firstname" id="firstname" /></td>
+        <td >'._e('First Name').'</td><td><input type="text" size=20  name="firstname" id="firstname" /></td>
     </tr>
     <tr>
-        <td ><?php _e('Last Name'); ?> </td><td><input type="text" size=20  name="lastname"  id="lastname" /></td>
+        <td >'._e('Last Name').' </td><td><input type="text" size=20  name="lastname"  id="lastname" /></td>
     </tr>
     <tr>
-        <td ><?php _e('Email'); ?>     </td><td><input type="text" size=20  name="email"     id="email" /><input type="hidden" name="returnpageid"      value="<?php echo $pageid; ?>" /><input type="hidden" name="webinarid"   value="<?php echo $webid; ?>" /></td>
+        <td >'._e('Email').'     </td><td><input type="text" size=20  name="email"     id="email" />
+		<input type="hidden" name="returnpageid"      value="'.$pageid.'" /><input type="hidden" name="webinarid"   value="'.$webid.'" /></td>
     </tr>
 
     <tr>
-        <td><input type="hidden" name="action" value="registerwebinars" /></td><td><input style="background:#629819; color:#ffffff; font-weight:bold;" type="submit" name="submit"  value="<?php _e('Register Now') ?>"/></td>
+        <td><input type="hidden" name="action" value="registerwebinars" /></td><td><input style="background:#629819; color:#ffffff; font-weight:bold;" type="submit" name="submit"  value="'. _e('Register Now').'"/></td>
     </tr>
     
 </table>
-</form>
+</form>';
 
+   $output.='
 <script type="text/javascript">
-$().ready(function(){	
-	$('#webinarregistration').validate({
+jQuery(document).ready(function(){	
+	$("#webinarregistration").validate({
 		rules:  {
 					firstname   :{required:true},
 					lastname    :{required:true},			
@@ -190,9 +196,9 @@ $().ready(function(){
 		});
 		
 });
-</script>
+</script>';
 
-<?php
+return $output;
 }
 /*UPDATING ADMIN SECTION SETTINGS TO OPTION TABLE*/
 if(isset($_POST['action']) && $_POST['action']=='savefreewebinar')

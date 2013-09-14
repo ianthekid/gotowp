@@ -2,7 +2,7 @@
 Contributors: brandonmuth,pankajagrawal
 Donate link: http://gotowp.com/
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
-Requires at least 3.2
+Requires at least: 3.2
 Tested Up To  :3.4.2
 Stable tag: 0.2
 License: GPLv2 or later
