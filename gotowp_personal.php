@@ -3,7 +3,7 @@
 Plugin Name: GoToWP Personal
 Plugin URI: http://www.gotowp.com/
 Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-Version: 1.0.2
+Version: 1.0.1
 Author: GoToWP.com
 Author URI:  http://www.gotowp.com/
 Support: http://www.gotowp.com/support
