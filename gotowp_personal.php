@@ -144,6 +144,16 @@ function add_freewebinardetails()
   
 </table>
 </form>
+
+<table class="">
+	<tr><th colspan="2" class=""><?php _e('Sample Usage Shortcode'); ?></th></tr>
+    <tr>
+    <td  class="tableclass"><?php _e('On Registration Page'); ?></td>  <td><input style="width:650px;" type="text" size=40  value="[register_free_webinar webid=xxxxxxx pageid=xxx]" name="shortcode" /></td>
+    
+    </tr>
+
+</table>
+
 </div>
 <?php	
 } 
@@ -280,4 +290,3 @@ function webinar_curls_registration($id)
 			echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$return_url.'">'; 	
 }
 
-?>
