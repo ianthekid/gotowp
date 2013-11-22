@@ -9,6 +9,11 @@ Author URI:  http://www.gotowp.com/
 Support: http://www.gotowp.com/support
 */
 
+
+define('GOTOWP_PERSONAL_PLUGIN_URL', plugin_dir_url( __FILE__ ));
+define('GOTOWP_PERSONAL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
+
+
 register_activation_hook(__FILE__,'freewebinar_install');
 function freewebinar_install()
 {
@@ -87,7 +92,7 @@ add_shortcode("register_free_webinar",'registration_forms');
 $webinarErrors= new WP_Error();
 function scriptas(){ 
 wp_enqueue_script('jquery');
-wp_enqueue_script('validationjs',plugins_url('/gotowp_personal/javascripts/jquery.validate.js'));
+wp_enqueue_script('validationjs',GOTOWP_PERSONAL_PLUGIN_URL.'javascripts/jquery.validate.js');
 }
 
 /*ADDING A SETTINGS LINK BESIDE ACTIVATE/DEACTIVATE*/
@@ -107,7 +112,7 @@ function gotowebinar_plugin_action_linkas( $links, $file ) {
 /*ADDING ADMIN MENU FOR SETTINGS*/
 add_action('admin_menu', 'gtfw_create_menu');
 function gtfw_create_menu() {
-add_menu_page('Webinar Plugin Settings', 'Free Webinar','administrator', __FILE__,'add_freewebinardetails',plugins_url('gotowp_personal/javascripts/images/webinar.png'));
+add_menu_page('Webinar Plugin Settings', 'Free Webinar','administrator', __FILE__,'add_freewebinardetails',GOTOWP_PERSONAL_PLUGIN_URL.'javascripts/images/webinar.png');
 }
 
 /*ADDING A SETTINGS LINK IN ADMN SETTINGS*/
