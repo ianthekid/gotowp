@@ -52,7 +52,7 @@ http://citrixonline-quick-oauth.herokuapp.com/   then choose the G2W OAuth Flow 
 * A change since the previous version.
 * Another change.
 
-=1.0.5 =
+= 1.0.5 =
 *updated form to mirror the form in GoToWebinar settings for each webinar
 
 
