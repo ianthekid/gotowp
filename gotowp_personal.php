@@ -3,7 +3,7 @@
 		Plugin Name: GoToWP Personal
 		Plugin URI: http://www.gotowp.com/
 		Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-		Version: 1.0.6
+		Version: 1.0.7
 		Author: GoToWP.com
 		Author URI:  http://www.gotowp.com/
 		Support: http://www.gotowp.com/support
@@ -125,20 +125,20 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 			    </thead>
 			    <tbody>
 			     <tr>
-			        <td class="tableclass" colspan="2">The <b style="color:#090;">Organizer Key</b>  and  <b style="color:#090;">Access Token</b>  can be obtained from online application after authenticating with O-Auth connector for webinars (G2W OAuth Flow) by clicking the link below<br>
+			        <td class="gotowp-description tableclass" colspan="2">The <b style="color:#090;">Organizer Key</b>  and  <b style="color:#090;">Access Token</b>  can be obtained from online application after authenticating with O-Auth connector for webinars (G2W OAuth Flow) by clicking the link below<br>
 				    <a href="http://citrixonline-quick-oauth.herokuapp.com/" target="_blank"><b>http://citrixonline-quick-oauth.herokuapp.com/</b></a></td> 
 				</tr>    
 			    <tr>
-			        <td class="tableclass"><?php _e('Organizer Key'); ?></td> 
+			        <td class="gotowp-organizer-key tableclass"><?php _e('Organizer Key'); ?></td> 
 			        <td><input type="text" size=40  value="<?php echo get_option('gotowp_personal_organizer_key'); ?>" name="gotowp_personal_organizer_key"  id="gotowp_personal_organizer_key"/></td>
 			    </tr>
 			    <tr>
-			        <td class="tableclass"><?php _e('Access Token'); ?></td>  
+			        <td class="gotowp-access-token tableclass"><?php _e('Access Token'); ?></td>  
 			        <td><input type="text" size=40  value="<?php echo get_option('gotowp_personal_access_token'); ?>" name="gotowp_personal_access_token" id="gotowp_personal_access_token"/></td>
 			    </tr>
 			    <tr>
-			        <td class="tableclass"><input  type="hidden" name="action" value="gotowp_personal_savefreewebinar" /></td>
-			        <td><input id="savefreewebinar_submit" style="" type="submit" name="submit"  value="<?php _e('Save Details') ?>"/></td>
+			        <td class="gotowp-action-hidden tableclass"><input  type="hidden" name="action" value="gotowp_personal_savefreewebinar" /></td>
+			        <td><input class="gotowp-submit-button" id="savefreewebinar_submit" style="" type="submit" name="submit"  value="<?php _e('Save Details') ?>"/></td>
 			    </tr>  
 			    </tbody>
 			</table>
@@ -146,11 +146,11 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 		
 		<form name="gotowp_personal_webinar_forms" id="gotowp_personal_webinar_forms" action="" method="post">		
 			<table class="tableborder">
-			<thead>
-			    <tr><th colspan="2" class="tableheader"><?php _e('Refresh Webinar forms'); ?></th></tr>
+			    <thead>
+			        <tr><th colspan="2" class="tableheader"><?php _e('Refresh Webinar forms'); ?></th></tr>
 			    </thead>
 			    <tbody>
-			    <tr><td><p>If you edit GoToWebinar's registration form after you create a webinar,<br/> 
+			    <tr><td><p class="gotowp-description">If you edit GoToWebinar's registration form after you create a webinar,<br/> 
 			    you can display these changes on your Wordpress site by using the Refresh Webinar forms feature</p></td></tr>
 			    <tr>
 			        <td>
@@ -428,6 +428,18 @@ add_shortcode("register_free_webinar",'gotowp_personal_registration_forms');
 
 function gotowp_personal_registration_forms($atts)
 {
+	
+	$spa_array=array(
+   'First Name' => 'Primer Nombre',
+'Last Name' => 'Apellido',
+'Email' => 'Email', 
+'Address' => 'Direcci&#243;n',
+'City' => 'Ciudad',
+'State' => 'Estado',
+'Zip Code' => 'C&#243;digo Zip',
+'Register Now' => 'Reg&#237;strarse Ahora',
+	);
+	
 	global $webinarErrors;
 	extract(shortcode_atts(array( 'webid'=>'','pageid'=>''), $atts));
 	$output='';
@@ -438,7 +450,7 @@ function gotowp_personal_registration_forms($atts)
 	$endTime=strtotime($webinar->times[0]->endTime);
 	$subject=$webinar->subject;
 	
-	$date_title="<b>Date and Time</b> <br/>".date('D, M j, Y m:s A',$startTime);	
+	$date_title="<b>Fecha y Hora</b> <br/>".date('D, M j, Y m:s A',$startTime);	
 
 	$sec_diff=$endTime-$startTime;
 	
@@ -453,22 +465,21 @@ function gotowp_personal_registration_forms($atts)
 	<table class="tableborder">';
 
 	$output.=$webinarErrors->get_error_message('broke');
-	$output.='<tr><th colspan="2" class="tableheader">'.$subject.'</th></tr>';
-	$output.='<tr><td colspan="2" class="">'.$date_title.'</td></tr>';
 	
-
+	$output.='<thead><tr class="gotowp-subject"><th colspan="2" class="tableheader subject">'.$subject.'</th></tr></thead>';
+	$output.='<tbody><tr class="gotowp-date"><td colspan="2" class="date">'.$date_title.'</td></tr>';
 	
 	if(isset($registration_fields->fields) && count($registration_fields->fields) > 0){
 		foreach($registration_fields->fields as $row): $class='';
 		if($row->required){ $class='required';}
 		if($row->field=='email'){$class=$class.' email';}
 		
-		$output.='<tr><td >'.ucwords(preg_replace('/(?=([A-Z]))/',' '.${1},$row->field)).'</td><td>';
+		$output.='<tr class="gotowp-'.$row->field.'"><td >'.$spa_array[ucwords(preg_replace('/(?=([A-Z]))/',' '.${1},$row->field))].'</td><td>';
 		
 		if(isset($row->answers)){
 			$output.='
-					        <select name="'.$row->field.'" id="'.$row->field.'" class="'.$class.'">
-			                <option selected="selected" value="">--Select--</option>';
+		        <select name="'.$row->field.'" id="'.$row->field.'" class="gotowp-select '.$class.'">
+			    <option selected="selected" value="">--Select--</option>';
 				
 			foreach($row->answers as $opt):
 			$output.=' <option value="'.$opt.'">'.$opt.'</option>';
@@ -476,7 +487,7 @@ function gotowp_personal_registration_forms($atts)
 				
 			$output.='</select>';
 		}else{
-			$output.='<input class="'.$class.'" type="text" size=20  name="'.$row->field.'" id="'.$row->field.'" />';
+			$output.='<input class="gotowp-input-text '.$class.'" type="text" size=20  name="'.$row->field.'" id="'.$row->field.'" />';
 		}
 		
 		$output.='</td></tr>';
@@ -484,28 +495,33 @@ function gotowp_personal_registration_forms($atts)
 		endforeach;
 
     }else{
-         $output.='<tr><td >First Name</td><td>';
-         $output.='<input class="required" type="text" size=20  name="firstName" id="firstName" />';
-         $output.='<tr><td >Last Name</td><td>';
-         $output.='<input class="required " type="text" size=20  name="lastName" id="lastName" />';         
-         $output.='<tr><td >Email</td><td>';
-         $output.='<input class="required email" type="text" size=20  name="email" id="email" />'; 
+         $output.='<tr class="gotowp-firstName"><td >First Name</td><td>';
+         $output.='<input class="gotowp-input-text required" type="text" size=20  name="firstName" id="firstName" />';
+         $output.='<tr class="gotowp-lastName"><td >Last Name</td><td>';
+         $output.='<input class="gotowp-input-text required " type="text" size=20  name="lastName" id="lastName" />';         
+         $output.='<tr class="gotowp-email"><td >Email</td><td>';
+         $output.='<input class="gotowp-input-text required email" type="text" size=20  name="email" id="email" />'; 
       }	
 
 	$output.='<tr>
 		    <input type="hidden" name="returnpageid"      value="'.$pageid.'" />
 			<input type="hidden" name="webinarid"   value="'.$webid.'" /></td>
 	        <td><input type="hidden" name="action" value="gotowp_personal_register_webinars" /></td>
-			<td><input id="register_now_submit" style="" type="submit" name="submit"  value="Register Now"/></td>
+			<td><input id="register_now_submit" style="" type="submit" name="submit"  value="Reg&#237;strarse Ahora"/></td>
 	    </tr>
-	  
+	  </tbody>
 	</table>
 	</form>';
 
 	$output.='
 		<script type="text/javascript">
 			jQuery(document).ready(function($){
-				$("#gotowp_personal_webinar_registration").validate();
+		
+				    jQuery.extend(jQuery.validator.messages, {
+		             required: "Este Campo es Necesario."
+		            });		
+		
+				   $("#gotowp_personal_webinar_registration").validate();
 			});
 		</script>';
 
