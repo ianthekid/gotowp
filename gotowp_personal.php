@@ -428,18 +428,6 @@ add_shortcode("register_free_webinar",'gotowp_personal_registration_forms');
 
 function gotowp_personal_registration_forms($atts)
 {
-	
-	$spa_array=array(
-   'First Name' => 'Primer Nombre',
-'Last Name' => 'Apellido',
-'Email' => 'Email', 
-'Address' => 'Direcci&#243;n',
-'City' => 'Ciudad',
-'State' => 'Estado',
-'Zip Code' => 'C&#243;digo Zip',
-'Register Now' => 'Reg&#237;strarse Ahora',
-	);
-	
 	global $webinarErrors;
 	extract(shortcode_atts(array( 'webid'=>'','pageid'=>''), $atts));
 	$output='';
@@ -450,7 +438,7 @@ function gotowp_personal_registration_forms($atts)
 	$endTime=strtotime($webinar->times[0]->endTime);
 	$subject=$webinar->subject;
 	
-	$date_title="<b>Fecha y Hora</b> <br/>".date('D, M j, Y m:s A',$startTime);	
+	$date_title="<b>Date and Time</b> <br/>".date('D, M j, Y m:s A',$startTime);	
 
 	$sec_diff=$endTime-$startTime;
 	
@@ -474,7 +462,7 @@ function gotowp_personal_registration_forms($atts)
 		if($row->required){ $class='required';}
 		if($row->field=='email'){$class=$class.' email';}
 		
-		$output.='<tr class="gotowp-'.$row->field.'"><td >'.$spa_array[ucwords(preg_replace('/(?=([A-Z]))/',' '.${1},$row->field))].'</td><td>';
+		$output.='<tr class="gotowp-'.$row->field.'"><td >'.ucwords(preg_replace('/(?=([A-Z]))/',' '.${1},$row->field)).'</td><td>';
 		
 		if(isset($row->answers)){
 			$output.='
@@ -507,7 +495,7 @@ function gotowp_personal_registration_forms($atts)
 		    <input type="hidden" name="returnpageid"      value="'.$pageid.'" />
 			<input type="hidden" name="webinarid"   value="'.$webid.'" /></td>
 	        <td><input type="hidden" name="action" value="gotowp_personal_register_webinars" /></td>
-			<td><input id="register_now_submit" style="" type="submit" name="submit"  value="Reg&#237;strarse Ahora"/></td>
+			<td><input id="register_now_submit" style="" type="submit" name="submit"  value="Register Now"/></td>
 	    </tr>
 	  </tbody>
 	</table>
@@ -516,12 +504,7 @@ function gotowp_personal_registration_forms($atts)
 	$output.='
 		<script type="text/javascript">
 			jQuery(document).ready(function($){
-		
-				    jQuery.extend(jQuery.validator.messages, {
-		             required: "Este Campo es Necesario."
-		            });		
-		
-				   $("#gotowp_personal_webinar_registration").validate();
+				$("#gotowp_personal_webinar_registration").validate();
 			});
 		</script>';
 
