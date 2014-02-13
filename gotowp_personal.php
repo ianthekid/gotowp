@@ -125,8 +125,8 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 			    </thead>
 			    <tbody>
 			     <tr>
-			        <td class="gotowp-description tableclass" colspan="2">The <b style="color:#090;">Organizer Key</b>  and  <b style="color:#090;">Access Token</b>  can be obtained from online application after authenticating with O-Auth connector for webinars (G2W OAuth Flow) by clicking the link below<br>
-				    <a href="http://citrixonline-quick-oauth.herokuapp.com/" target="_blank"><b>http://citrixonline-quick-oauth.herokuapp.com/</b></a></td> 
+			        <td class="gotowp-description tableclass" colspan="2">The <b style="color:#090;">Organizer Key</b>  and  <b style="color:#090;">Access Token</b>  can be obtained from online application after authenticating with O-Auth connector for webinars (G2W OAuth Flow) by clicking the link below. Keys generated through app.gotowp.com are stable for 1 year<br>
+				    <a href="http://app.gotowp.com/" target="_blank"><b>http://app.gotowp.com/</b></a></td> 
 				</tr>    
 			    <tr>
 			        <td class="gotowp-organizer-key tableclass"><?php _e('Organizer Key'); ?></td> 

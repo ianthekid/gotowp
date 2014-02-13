@@ -36,9 +36,9 @@ pageid                 - thank you page id for webinar
 For setting admin Panel options go to wp-admin->Settings->GoToWebinar or Directly from Admin Menu
 
 = Webinar Details =
-Enter The Organizer Key  and Access Token  which can be obtained from online app here 
-http://citrixonline-quick-oauth.herokuapp.com/   then choose the G2W OAuth Flow login to your account and allow the app to access details of your account
-
+Enter The Organizer Key and Access Token which can be obtained from our online app at http://app.gotowp.com/ 
+Once there click the G2W OAuth Flow button, login to your account and allow the app to access details of your account. Citrix will then generate the necessary key and token on the screen.
+Keys generated through app.gotowp.com are stable for 1 year
 
 == Screenshots ==
 
