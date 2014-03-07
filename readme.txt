@@ -4,7 +4,7 @@ Donate link: http://gotowp.com/
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
 Requires at least: 3.2
 Tested up to: 3.8.1
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,12 +23,12 @@ You may directly upload the zip folder from admin or place the extracted files i
 = How to use shortcode =
 
 You may use a shortcode like this 
-[register_free_webinar webid=7214273268860215552 pageid=14]
+[register_free_webinar webid=xxxxxxxxxxx pageid=14]
 
 where 
 register_free_webinar - shortcode for registration form to appear on page or post
-webid                  - webinar registration id for example if your registration URL is https://attendee.gotowebinar.com/register/7214273268860215552
-		         then webid will be 7214273268860215552
+webid                  - webinar registration id for example if your registration URL is https://attendee.gotowebinar.com/register/xxxxxxxxxxxxxx
+		         then webid will be xxxxxxxxxxxxxxxx
 pageid                 - thank you page id for webinar 
 
 
@@ -48,12 +48,17 @@ Keys generated through app.gotowp.com are stable for 1 year
 
 == Changelog ==
 
+= 1.0.8 =
+* updated fixed "date format issue"
+
+= 1.0.5 =
+* updated form to mirror the form in GoToWebinar settings for each webinar
+
 = 1.0 =
 * A change since the previous version.
 * Another change.
 
-= 1.0.5 =
-* updated form to mirror the form in GoToWebinar settings for each webinar
+
 
 
 == Upgrade Notice ==

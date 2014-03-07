@@ -3,7 +3,7 @@
 		Plugin Name: GoToWP Personal
 		Plugin URI: http://www.gotowp.com/
 		Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-		Version: 1.0.7
+		Version: 1.0.8
 		Author: GoToWP.com
 		Author URI:  http://www.gotowp.com/
 		Support: http://www.gotowp.com/support
@@ -11,7 +11,7 @@
 
 define('GOTOWP_PERSONAL_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('GOTOWP_PERSONAL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.0.5');
+define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.0.8');
 define('GOTOWP_PERSONAL_PLUGIN_SLUG', 'gotowp-personal');
 
 $webinarErrors= new WP_Error();
@@ -211,9 +211,7 @@ else{
 	
 	function gotowp_personal_save_before_registration()
 	{
-		global $webinarErrors;	
-
-			
+		global $webinarErrors;			
 
 		
 		if( isset($_REQUEST['action']) && $_REQUEST['action']=='gotowp_personal_register_webinars' )
@@ -421,9 +419,6 @@ function gotowp_personal_get_webinars(){
 	return $webinars_option;
 }
 
-
-
-
 add_shortcode("register_free_webinar",'gotowp_personal_registration_forms');
 
 function gotowp_personal_registration_forms($atts)
@@ -434,20 +429,26 @@ function gotowp_personal_registration_forms($atts)
 	$registration_fields=webinar_get_registration_fields($webid);
 	$webinar=gotowp_personal_get_webinar($webid);
 
-	$startTime=strtotime($webinar->times[0]->startTime);
-	$endTime=strtotime($webinar->times[0]->endTime);
 	$subject=$webinar->subject;
-	
-	$date_title="<b>Date and Time</b> <br/>".date('D, M j, Y m:s A',$startTime);	
 
-	$sec_diff=$endTime-$startTime;
+	$timezone_string=get_option('timezone_string');
+	
+    $startTime = new DateTime($webinar->times[0]->startTime);
+    $startTime->setTimezone(new DateTimeZone($timezone_string));
+
+    $endTime = new DateTime($webinar->times[0]->endTime);
+    $endTime->setTimezone(new DateTimeZone($timezone_string));			
+	
+	$date_title="<b>Date and Time</b> <br/>".$startTime->format('D, M j, Y m:s A');				
+
+	$sec_diff=$endTime->getTimestamp()-$startTime->getTimestamp();	
 	
 	if($sec_diff > 60){
-	  $date_title.=' - '.date('m:s A',$endTime);
+	  $date_title.=' - '.$endTime->format('m:s A');
 	}
-	$date_title.=date(' T',$endTime);
 	
-
+	$date_title.=$endTime->format(' T');	
+	
 	$output.='<form name="gotowp_personal_webinar_registration" id="gotowp_personal_webinar_registration" action="" method="post" >
 
 	<table class="tableborder">';
@@ -510,4 +511,3 @@ function gotowp_personal_registration_forms($atts)
 
 	return $output;
 }
-
