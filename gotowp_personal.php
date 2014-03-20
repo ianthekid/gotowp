@@ -3,7 +3,7 @@
 		Plugin Name: GoToWP Personal
 		Plugin URI: http://www.gotowp.com/
 		Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-		Version: 1.0.8
+		Version: 1.0.9
 		Author: GoToWP.com
 		Author URI:  http://www.gotowp.com/
 		Support: http://www.gotowp.com/support
@@ -11,7 +11,7 @@
 
 define('GOTOWP_PERSONAL_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('GOTOWP_PERSONAL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.0.8');
+define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.0.9');
 define('GOTOWP_PERSONAL_PLUGIN_SLUG', 'gotowp-personal');
 
 $webinarErrors= new WP_Error();
@@ -65,9 +65,8 @@ function gotowp_personal_uninstall()
 
 
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
-		
-	add_action( 'admin_enqueue_scripts', 'gotowp_personal_enqueue_admin_styles'  );
-	
+
+	add_action( 'admin_enqueue_scripts', 'gotowp_personal_enqueue_admin_styles'  );	
 	function gotowp_personal_enqueue_admin_styles(){		
 		$screen = get_current_screen();
 		if ( 'toplevel_page_gotowp-personal-settings' == $screen->id ) {
@@ -94,20 +93,27 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	/*ADD FREE WEBINAR DETAILS*/
 	function gotowp_personal_plugin_add_webinar_details()
 	{	
-		if(isset($_POST['action']) && $_POST['action']=='gotowp_personal_savefreewebinar')
+		if(isset($_POST['action']) && trim($_POST['action'])=='gotowp_personal_savefreewebinar')
 		{
-			update_option( 'gotowp_personal_organizer_key',$_REQUEST['gotowp_personal_organizer_key']);
-			update_option( 'gotowp_personal_access_token', $_REQUEST['gotowp_personal_access_token'] );
+			$gotowp_personal_organizer_key=esc_attr(trim($_REQUEST['gotowp_personal_organizer_key']));
+			$gotowp_personal_access_token=esc_attr(trim($_REQUEST['gotowp_personal_access_token']));
+
+			update_option( 'gotowp_personal_organizer_key',$gotowp_personal_organizer_key);
+			update_option( 'gotowp_personal_access_token', $gotowp_personal_access_token);
 		}
 		
-		if(isset($_POST['action']) && $_POST['action']=='gotowp_personal_webinar_forms')
+		if(isset($_POST['action']) && trim($_POST['action'])=='gotowp_personal_webinar_forms')
 		{
             $response=gotowp_personal_get_webinars();
-            $webinars_arr=json_decode($response);           
-      
-            foreach($webinars_arr as $web_key){     
-            	$registrationUrl=$web_key->registrationUrl;
-            	$web_key=str_replace('https://attendee.gotowebinar.com/register/','',$registrationUrl);
+            $webinars_arr=json_decode($response);        
+     
+            foreach($webinars_arr as $webinar){     
+            	if(isset($webinar->registrationUrl)){
+	            	$registrationUrl=$webinar->registrationUrl;
+	            	$web_key=str_replace('https://attendee.gotowebinar.com/register/','',$registrationUrl);
+               }else{
+               	    $web_key=$webinar->webinarKey;
+               }
             	$web_key=trim($web_key); 	
             	webinar_update_registration_fields($web_key);            	
             }
@@ -130,11 +136,11 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 				</tr>    
 			    <tr>
 			        <td class="gotowp-organizer-key tableclass"><?php _e('Organizer Key'); ?></td> 
-			        <td><input type="text" size=40  value="<?php echo get_option('gotowp_personal_organizer_key'); ?>" name="gotowp_personal_organizer_key"  id="gotowp_personal_organizer_key"/></td>
+			        <td><input type="text" size=40  value="<?php echo trim(get_option('gotowp_personal_organizer_key')); ?>" name="gotowp_personal_organizer_key"  id="gotowp_personal_organizer_key"/></td>
 			    </tr>
 			    <tr>
 			        <td class="gotowp-access-token tableclass"><?php _e('Access Token'); ?></td>  
-			        <td><input type="text" size=40  value="<?php echo get_option('gotowp_personal_access_token'); ?>" name="gotowp_personal_access_token" id="gotowp_personal_access_token"/></td>
+			        <td><input type="text" size=40  value="<?php echo trim(get_option('gotowp_personal_access_token')); ?>" name="gotowp_personal_access_token" id="gotowp_personal_access_token"/></td>
 			    </tr>
 			    <tr>
 			        <td class="gotowp-action-hidden tableclass"><input  type="hidden" name="action" value="gotowp_personal_savefreewebinar" /></td>
@@ -182,7 +188,7 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	/*ADDING ADMIN MENU FOR SETTINGS*/
 	add_action('admin_menu','gotowp_personal_admin_menu');
 	function gotowp_personal_admin_menu() {
-		add_menu_page('Webinar Plugin Settings', 'GOTOWP PERSONAL','administrator', GOTOWP_PERSONAL_PLUGIN_SLUG.'-settings','gotowp_personal_plugin_add_webinar_details',GOTOWP_PERSONAL_PLUGIN_URL.'assets/img/webinar.png');
+		add_menu_page('Webinar Plugin Settings', 'GOTOWP PERSONAL','manage_options', GOTOWP_PERSONAL_PLUGIN_SLUG.'-settings','gotowp_personal_plugin_add_webinar_details',GOTOWP_PERSONAL_PLUGIN_URL.'assets/img/webinar.png');
 	}	
 
 
@@ -214,11 +220,15 @@ else{
 		global $webinarErrors;			
 
 		
-		if( isset($_REQUEST['action']) && $_REQUEST['action']=='gotowp_personal_register_webinars' )
+		if( isset($_REQUEST['action']) && trim($_REQUEST['action'])=='gotowp_personal_register_webinars' )
 		{
-			$organizer_key= get_option('gotowp_personal_organizer_key');
-			$access_token = get_option('gotowp_personal_access_token');
-			$gtw_url = "https://api.citrixonline.com/G2W/rest/organizers/".$organizer_key."/webinars/".$_REQUEST['webinarid']."/registrants";
+			$webinarid=trim(esc_attr($_REQUEST['webinarid']));
+
+		  if(!empty($webinarid) && $webinarid !=''){
+
+			$organizer_key= trim(get_option('gotowp_personal_organizer_key'));
+			$access_token = trim(get_option('gotowp_personal_access_token'));
+			$gtw_url = "https://api.citrixonline.com/G2W/rest/organizers/".$organizer_key."/webinars/".$webinarid."/registrants";
 			$headers=array( 
 							"HTTP/1.1",
 							"Accept: application/json",
@@ -251,12 +261,12 @@ else{
 					global $wpdb;
 	                $webinar_table = $wpdb->prefix . "gotowp_personal_webinars";
 	                
-	                $webinar_id=$_POST['webinarid'];                			
+	                $webinar_id=trim(esc_attr($_POST['webinarid']));                			
 				    $registration_fields=webinar_get_registration_fields($webinar_id);
 				    
-				    $firstName=esc_attr($_POST['firstName']);
-				    $lastName=esc_attr($_POST['lastName']);
-				    $email=esc_attr($_POST['email']);
+				    $firstName=trim(esc_attr($_POST['firstName']));
+				    $lastName=trim(esc_attr($_POST['lastName']));
+				    $email=trim(esc_attr($_POST['email']));
 				    
 				    unset($_POST['webinarid']);
 				    unset($_POST['action']);
@@ -271,7 +281,7 @@ else{
 					    );
 				
 				if($wpdb->insert( $webinar_table, $data)){	
-					$return_url   = get_permalink($_POST['returnpageid']);
+					$return_url   = get_permalink(trim(esc_attr($_POST['returnpageid'])));
 					$url= 'https://api.citrixonline.com/G2W/rest/organizers/'.$organizer_key.'/webinars/'.$webinar_id.'/registrants';
 		
 					$curl = curl_init($url);
@@ -279,7 +289,7 @@ else{
 					$curl_post_data=array();
 					
 					foreach($registration_fields->fields as $row):				
-					   $curl_post_data[$row->field]=$_POST[$row->field];				
+					   $curl_post_data[$row->field]=trim(esc_attr($_POST[$row->field]));				
 					endforeach;				
 	
 					$myOptions = array( 
@@ -293,9 +303,11 @@ else{
 	                );
 					curl_setopt_array($curl, $myOptions);
 					$curl_response = curl_exec($curl);
-					echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$return_url.'">'; 
+					wp_redirect($return_url);exit;
+					//echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$return_url.'">'; 
 				}
 			}
+		  }
 		}	
 	}
 
@@ -305,86 +317,105 @@ else{
 
 function webinar_get_registration_fields($web_key)
 {
-	$webinar_option_key='gotowp_personal_webinar_form_id_'.$web_key;
-	if ( get_option( $webinar_option_key) !== false ) {
-		$response=get_option($webinar_option_key);
-	}
-	else{
-		webinar_update_registration_fields($web_key);
-	}		
-	$request=json_decode($response);
-	return $request;
+	$web_key=trim($web_key);
+		if(!empty($web_key) && $web_key !=''){
+			webinar_update_registration_fields($web_key);
+			$webinar_option_key='gotowp_personal_webinar_form_id_'.$web_key;
+			if ( get_option( $webinar_option_key) !== false ) {
+				$response=get_option($webinar_option_key);
+			}
+			else{
+				$response=webinar_update_registration_fields($web_key);
+			}		
+			$request=json_decode($response);
+			return $request;
+        }
 }
 
 
 function webinar_update_registration_fields($web_key)
 {
-	$webinar_option_key='gotowp_personal_webinar_form_id_'.$web_key;	
-	delete_option($webinar_option_key);
+	$web_key=trim($web_key);	
+	if(!empty($web_key) && $web_key !=''){
+		$webinar_option_key='gotowp_personal_webinar_form_id_'.$web_key;	
+		delete_option($webinar_option_key);
 
-	$organizer_key= get_option('gotowp_personal_organizer_key');
-	$access_token = get_option('gotowp_personal_access_token');
-	$gtw_url = "https://api.citrixonline.com/G2W/rest/organizers/".$organizer_key."/webinars/".$web_key."/registrants/fields";
-	$headers=array(
-			"HTTP/1.1",
-			"Accept: application/json",
-			"Accept: application/vnd.citrix.g2wapi-v1.1+json",
-			"Content-Type: application/json",
-			"Authorization: OAuth oauth_token=$access_token",
-	);
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_POST,0);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-	curl_setopt($curl, CURLOPT_URL, $gtw_url);
-	curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	$response= curl_exec($curl);
-	curl_close($curl);
-	update_option( $webinar_option_key, $response, '', 'yes' );
+		$organizer_key= get_option('gotowp_personal_organizer_key');
+		$access_token = get_option('gotowp_personal_access_token');
+		$gtw_url = "https://api.citrixonline.com/G2W/rest/organizers/".$organizer_key."/webinars/".$web_key."/registrants/fields";
+		$headers=array(
+				"HTTP/1.1",
+				"Accept: application/json",
+				"Accept: application/vnd.citrix.g2wapi-v1.1+json",
+				"Content-Type: application/json",
+				"Authorization: OAuth oauth_token=$access_token",
+		);
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_POST,0);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($curl, CURLOPT_URL, $gtw_url);
+		curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$response= curl_exec($curl);
+		curl_close($curl);
+		$response_de=json_decode($response);
+		if(isset($response_de->fields)){
+		 update_option( $webinar_option_key, $response, '', 'yes' );
+	   }
+	   return $response;
+  }
 }
 
 
 
 function gotowp_personal_get_webinar($webinarKey){
+    $webinarKey=trim($webinarKey);
 
-	$webinar_option_key='gotowp_personal_webinar_id_'.$webinarKey;
+    if(!empty($webinarKey) && $webinarKey !=''){
 
-	if ( get_option( $webinar_option_key) !== false ) {
-		$response=get_option($webinar_option_key);
-	}
-	else{
+		$webinar_option_key='gotowp_personal_webinar_id_'.$webinarKey;
 
-		$organizer_key= get_option('gotowp_personal_organizer_key');
-		$access_token = get_option('gotowp_personal_access_token');
-		//https://api.citrixonline.com/G2W/rest/organizers/{organizerKey}/webinars/{webinarKey}
-		$url='https://api.citrixonline.com/G2W/rest/organizers/'.$organizer_key.'/webinars/'.$webinarKey;
-		$curl = curl_init($url);
-			
-		$myOptions = array(
-				CURLOPT_POST => false,
-				CURLOPT_SSL_VERIFYHOST => 0,
-				CURLOPT_SSL_VERIFYPEER => 0,
-				CURLOPT_URL => $url,
-				CURLOPT_RETURNTRANSFER => 1,
-				CURLOPT_HTTPHEADER => array( "Content-Type: application/json; charset=utf-8","Accept:application/json, text/javascript, */*; q=0.01", ("Authorization: OAuth oauth_token=".$access_token)));
-		curl_setopt_array($curl, $myOptions);
-		$curl_response = curl_exec($curl);
-		curl_close($curl);
-		update_option( $webinar_option_key, $curl_response, '', 'yes' );
-		$response=$curl_response;
-	}
+		if ( get_option( $webinar_option_key) !== false ) {
+			$response=get_option($webinar_option_key);
+		}
+		else{
 
-	$request=json_decode($response);
-	return $request;
+			$organizer_key= trim(get_option('gotowp_personal_organizer_key'));
+			$access_token = trim(get_option('gotowp_personal_access_token'));
+			//https://api.citrixonline.com/G2W/rest/organizers/{organizerKey}/webinars/{webinarKey}
+			$url='https://api.citrixonline.com/G2W/rest/organizers/'.$organizer_key.'/webinars/'.$webinarKey;
+			$curl = curl_init($url);
+				
+			$myOptions = array(
+					CURLOPT_POST => false,
+					CURLOPT_SSL_VERIFYHOST => 0,
+					CURLOPT_SSL_VERIFYPEER => 0,
+					CURLOPT_URL => $url,
+					CURLOPT_RETURNTRANSFER => 1,
+					CURLOPT_HTTPHEADER => array( "Content-Type: application/json; charset=utf-8","Accept:application/json, text/javascript, */*; q=0.01", ("Authorization: OAuth oauth_token=".$access_token)));
+			curl_setopt_array($curl, $myOptions);
+			$curl_response = curl_exec($curl);
+			curl_close($curl);
+			if(isset($curl_response->webinarKey)){
+			   update_option( $webinar_option_key, $curl_response, '', 'yes' );
+		    }
+			$response=$curl_response;
+		}
+
+		$request=json_decode($response);
+		return $request;
+   }else{
+   	  return false;
+   }
 
 }
 
 
 function gotowp_personal_update_webinars(){
 
-	$organizer_key= get_option('gotowp_personal_organizer_key');
-	$access_token = get_option('gotowp_personal_access_token');
+	$organizer_key= trim(get_option('gotowp_personal_organizer_key'));
+	$access_token = trim(get_option('gotowp_personal_access_token'));
 
 	//https://api.citrixonline.com/G2W/rest/organizers/{organizerKey}/webinars/{webinarKey}
 	$url='https://api.citrixonline.com/G2W/rest/organizers/'.$organizer_key.'/upcomingWebinars';
@@ -410,7 +441,7 @@ function gotowp_personal_update_webinars(){
 
 
 function gotowp_personal_get_webinars(){
-	$webinars_option= get_option('gotowp_personal_webinars_option');
+	$webinars_option= trim(get_option('gotowp_personal_webinars_option'));
 	if(empty($webinars_option) || $webinars_option ==''){
 		$webinars_option=gotowp_personal_update_webinars();
 		update_option('gotowp_personal_webinars_option',$webinars_option);
@@ -426,88 +457,102 @@ function gotowp_personal_registration_forms($atts)
 	global $webinarErrors;
 	extract(shortcode_atts(array( 'webid'=>'','pageid'=>''), $atts));
 	$output='';
+
+    $webid=trim($webid);
+    $pageid=trim($pageid);
+
 	$registration_fields=webinar_get_registration_fields($webid);
-	$webinar=gotowp_personal_get_webinar($webid);
 
-	$subject=$webinar->subject;
+	if(!isset($registration_fields->incident)){
 
-	$timezone_string=get_option('timezone_string');
-	
-    $startTime = new DateTime($webinar->times[0]->startTime);
-    $startTime->setTimezone(new DateTimeZone($timezone_string));
+			$webinar=gotowp_personal_get_webinar($webid);
 
-    $endTime = new DateTime($webinar->times[0]->endTime);
-    $endTime->setTimezone(new DateTimeZone($timezone_string));			
-	
-	$date_title="<b>Date and Time</b> <br/>".$startTime->format('D, M j, Y m:s A');				
+			if(!isset($webinar->incident)){
 
-	$sec_diff=$endTime->getTimestamp()-$startTime->getTimestamp();	
-	
-	if($sec_diff > 60){
-	  $date_title.=' - '.$endTime->format('m:s A');
-	}
-	
-	$date_title.=$endTime->format(' T');	
-	
-	$output.='<form name="gotowp_personal_webinar_registration" id="gotowp_personal_webinar_registration" action="" method="post" >
+			$subject=$webinar->subject;
 
-	<table class="tableborder">';
+			$timezone_string=$webinar->timeZone;
+			
+		    $startTime = new DateTime($webinar->times[0]->startTime);
+		    $startTime->setTimezone(new DateTimeZone($timezone_string));
 
-	$output.=$webinarErrors->get_error_message('broke');
-	
-	$output.='<thead><tr class="gotowp-subject"><th colspan="2" class="tableheader subject">'.$subject.'</th></tr></thead>';
-	$output.='<tbody><tr class="gotowp-date"><td colspan="2" class="date">'.$date_title.'</td></tr>';
-	
-	if(isset($registration_fields->fields) && count($registration_fields->fields) > 0){
-		foreach($registration_fields->fields as $row): $class='';
-		if($row->required){ $class='required';}
-		if($row->field=='email'){$class=$class.' email';}
-		
-		$output.='<tr class="gotowp-'.$row->field.'"><td >'.ucwords(preg_replace('/(?=([A-Z]))/',' '.${1},$row->field)).'</td><td>';
-		
-		if(isset($row->answers)){
+		    $endTime = new DateTime($webinar->times[0]->endTime);
+		    $endTime->setTimezone(new DateTimeZone($timezone_string));			
+			
+			$date_title="<b>Date and Time</b> <br/>".$startTime->format('D, M j, Y h:i A');				
+
+			$sec_diff=$endTime->getTimestamp()-$startTime->getTimestamp();	
+			
+			if($sec_diff > 60){
+			  $date_title.=' - '.$endTime->format('h:i A');
+			}
+			
+			$date_title.=$endTime->format(' T');	
+			
+			$output.='<form name="gotowp_personal_webinar_registration" id="gotowp_personal_webinar_registration" action="" method="post" >
+
+			<table class="tableborder">';
+
+			$output.=$webinarErrors->get_error_message('broke');
+			
+			$output.='<thead><tr class="gotowp-subject"><th colspan="2" class="tableheader subject">'.$subject.'</th></tr></thead>';
+			$output.='<tbody><tr class="gotowp-date"><td colspan="2" class="date">'.$date_title.'</td></tr>';
+			
+			if(isset($registration_fields->fields) && count($registration_fields->fields) > 0){
+				foreach($registration_fields->fields as $row): $class='';
+				if($row->required){ $class='required';}
+				if($row->field=='email'){$class=$class.' email';}
+				
+                $field_name = ucwords(preg_replace('/([a-z])([A-Z])/', '$1 $2', $row->field));
+
+				$output.='<tr class="gotowp-'.$row->field.'"><td >'.$field_name.'</td><td>';
+				
+				if(isset($row->answers)){
+					$output.='
+				        <select name="'.$row->field.'" id="'.$row->field.'" class="gotowp-select '.$class.'">
+					    <option selected="selected" value="">--Select--</option>';
+						
+					foreach($row->answers as $opt):
+					$output.=' <option value="'.$opt.'">'.$opt.'</option>';
+					endforeach;
+						
+					$output.='</select>';
+				}else{
+					$output.='<input class="gotowp-input-text '.$class.'" type="text" size=20  name="'.$row->field.'" id="'.$row->field.'" />';
+				}
+				
+				$output.='</td></tr>';
+				
+				endforeach;
+
+		    }else{
+		         $output.='<tr class="gotowp-firstName"><td >First Name</td><td>';
+		         $output.='<input class="gotowp-input-text required" type="text" size=20  name="firstName" id="firstName" />';
+		         $output.='<tr class="gotowp-lastName"><td >Last Name</td><td>';
+		         $output.='<input class="gotowp-input-text required " type="text" size=20  name="lastName" id="lastName" />';         
+		         $output.='<tr class="gotowp-email"><td >Email</td><td>';
+		         $output.='<input class="gotowp-input-text required email" type="text" size=20  name="email" id="email" />'; 
+		      }	
+
+			$output.='<tr>
+				    <input type="hidden" name="returnpageid"      value="'.$pageid.'" />
+					<input type="hidden" name="webinarid"   value="'.$webid.'" /></td>
+			        <td><input type="hidden" name="action" value="gotowp_personal_register_webinars" /></td>
+					<td><input id="register_now_submit" style="" type="submit" name="submit"  value="Register Now"/></td>
+			    </tr>
+			  </tbody>
+			</table>
+			</form>';
+
 			$output.='
-		        <select name="'.$row->field.'" id="'.$row->field.'" class="gotowp-select '.$class.'">
-			    <option selected="selected" value="">--Select--</option>';
-				
-			foreach($row->answers as $opt):
-			$output.=' <option value="'.$opt.'">'.$opt.'</option>';
-			endforeach;
-				
-			$output.='</select>';
-		}else{
-			$output.='<input class="gotowp-input-text '.$class.'" type="text" size=20  name="'.$row->field.'" id="'.$row->field.'" />';
+				<script type="text/javascript">
+					jQuery(document).ready(function($){
+						$("#gotowp_personal_webinar_registration").validate();
+					});
+				</script>';
 		}
-		
-		$output.='</td></tr>';
-		
-		endforeach;
 
-    }else{
-         $output.='<tr class="gotowp-firstName"><td >First Name</td><td>';
-         $output.='<input class="gotowp-input-text required" type="text" size=20  name="firstName" id="firstName" />';
-         $output.='<tr class="gotowp-lastName"><td >Last Name</td><td>';
-         $output.='<input class="gotowp-input-text required " type="text" size=20  name="lastName" id="lastName" />';         
-         $output.='<tr class="gotowp-email"><td >Email</td><td>';
-         $output.='<input class="gotowp-input-text required email" type="text" size=20  name="email" id="email" />'; 
-      }	
+	}
 
-	$output.='<tr>
-		    <input type="hidden" name="returnpageid"      value="'.$pageid.'" />
-			<input type="hidden" name="webinarid"   value="'.$webid.'" /></td>
-	        <td><input type="hidden" name="action" value="gotowp_personal_register_webinars" /></td>
-			<td><input id="register_now_submit" style="" type="submit" name="submit"  value="Register Now"/></td>
-	    </tr>
-	  </tbody>
-	</table>
-	</form>';
-
-	$output.='
-		<script type="text/javascript">
-			jQuery(document).ready(function($){
-				$("#gotowp_personal_webinar_registration").validate();
-			});
-		</script>';
-
-	return $output;
+   return $output;
 }
