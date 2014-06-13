@@ -7,7 +7,7 @@
 	#gotowp_personal_adminsettings .tableheader{background:#007FC8;color:#ffffff;}
 	#gotowp_personal_adminsettings #savefreewebinar_submit{background:#629819 ; color:#ffffff; font-weight:bold;padding:5px 18px 5px 15px;}
 	
-	#gotowp_personal_sample_table{}
+	#gotowp_personal_sample_table{float: left;}
 	#gotowp_personal_sample_table .heading_row{}
 	#gotowp_personal_sample_table .sample_row{clear: both;}
 	#gotowp_personal_sample_table .sample_row .sample_title{ float: left; padding: 5px; width: 130px;}
@@ -17,3 +17,9 @@
     .tableborder {    border: 1px solid #56B4EF;    margin-bottom: 15px;}
     .tableheader {    background: none repeat scroll 0 0 #007FC8;    color: #FFFFFF;    font-size: 15px;    font-weight: bold;    padding: 5px;}
     tbody {    float: left;    padding: 7px 15px;}
+
+     .wrap form{float: left;width:100%;}
+    .wrap .row{}
+    .wrap .row .col{}
+    .wrap .row .col1{float: left;width:40%;}
+    .wrap .row .col2{}

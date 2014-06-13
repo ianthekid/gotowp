@@ -3,7 +3,7 @@
 		Plugin Name: GoToWP Personal
 		Plugin URI: http://www.gotowp.com/
 		Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-		Version: 1.0.9
+		Version: 1.1.0
 		Author: GoToWP.com
 		Author URI:  http://www.gotowp.com/
 		Support: http://www.gotowp.com/support
@@ -11,7 +11,7 @@
 
 define('GOTOWP_PERSONAL_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('GOTOWP_PERSONAL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.0.9');
+define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.1.0');
 define('GOTOWP_PERSONAL_PLUGIN_SLUG', 'gotowp-personal');
 
 $webinarErrors= new WP_Error();
@@ -124,6 +124,10 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 		?>
 
 	<div class="wrap">
+
+	   <div class="row"> 
+
+	    <div class="col col1">
 		<form name="gotowp_personal_adminsettings" id="gotowp_personal_adminsettings" action="" method="post">
 			<table class="tableborder">
 			    <thead>
@@ -149,6 +153,19 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 			    </tbody>
 			</table>
 		</form>
+        </div>
+
+        <div class="col col2">
+
+			<a href="http://CitrixOnline.evyy.net/c/83431/19721/810">
+			 <img src="http://adn.impactradius.com/display-ad/810-19721" border="0" alt="GoToWebinar Free Trial" width="300" height="250"/>
+			</a>
+			<img height="1" width="1" src="http://CitrixOnline.evyy.net/i/83431/19721/810" border="0" />        
+
+        </div>
+
+
+		</div>
 		
 		<form name="gotowp_personal_webinar_forms" id="gotowp_personal_webinar_forms" action="" method="post">		
 			<table class="tableborder">
