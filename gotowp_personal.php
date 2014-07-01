@@ -3,7 +3,7 @@
 		Plugin Name: GoToWP Personal
 		Plugin URI: http://www.gotowp.com/
 		Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-		Version: 1.1.0
+		Version: 1.1.1
 		Author: GoToWP.com
 		Author URI:  http://www.gotowp.com/
 		Support: http://www.gotowp.com/support
@@ -11,7 +11,7 @@
 
 define('GOTOWP_PERSONAL_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('GOTOWP_PERSONAL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.1.0');
+define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.1.1');
 define('GOTOWP_PERSONAL_PLUGIN_SLUG', 'gotowp-personal');
 
 $webinarErrors= new WP_Error();
@@ -95,25 +95,26 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	{	
 		if(isset($_POST['action']) && trim($_POST['action'])=='gotowp_personal_savefreewebinar')
 		{
-			$gotowp_personal_organizer_key=esc_attr(trim($_REQUEST['gotowp_personal_organizer_key']));
+			$gotowp_personal_organizer_key=trim(esc_attr($_REQUEST['gotowp_personal_organizer_key']));
 			$gotowp_personal_access_token=esc_attr(trim($_REQUEST['gotowp_personal_access_token']));
 
 			update_option( 'gotowp_personal_organizer_key',$gotowp_personal_organizer_key);
 			update_option( 'gotowp_personal_access_token', $gotowp_personal_access_token);
 		}
 		
-		if(isset($_POST['action']) && trim($_POST['action'])=='gotowp_personal_webinar_forms')
+		if(isset($_POST['action']) && trim($_POST['action'])=='gotowp_personal_update_webinar_forms')
 		{
             $response=gotowp_personal_get_webinars();
-            $webinars_arr=json_decode($response);        
+            $webinars_arr=gotowp_personal_json_decode($response);        
      
             foreach($webinars_arr as $webinar){     
-            	if(isset($webinar->registrationUrl)){
+/*             	if(isset($webinar->registrationUrl)){
 	            	$registrationUrl=$webinar->registrationUrl;
 	            	$web_key=str_replace('https://attendee.gotowebinar.com/register/','',$registrationUrl);
                }else{
                	    $web_key=$webinar->webinarKey;
-               }
+               } */
+                $web_key=$webinar->webinarKey;
             	$web_key=trim($web_key); 	
             	webinar_update_registration_fields($web_key);            	
             }
@@ -156,12 +157,10 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
         </div>
 
         <div class="col col2">
-
 			<a href="http://CitrixOnline.evyy.net/c/83431/19721/810">
 			 <img src="http://adn.impactradius.com/display-ad/810-19721" border="0" alt="GoToWebinar Free Trial" width="300" height="250"/>
 			</a>
-			<img height="1" width="1" src="http://CitrixOnline.evyy.net/i/83431/19721/810" border="0" />        
-
+			<img height="1" width="1" src="http://CitrixOnline.evyy.net/i/83431/19721/810" border="0" />
         </div>
 
 
@@ -177,7 +176,7 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 			    you can display these changes on your Wordpress site by using the Refresh Webinar forms feature</p></td></tr>
 			    <tr>
 			        <td>
-			           <input  type="hidden" name="action" value="gotowp_personal_webinar_forms" />
+			           <input  type="hidden" name="action" value="gotowp_personal_update_webinar_forms" />
 			           <input id="update_webinar_forms" style="" type="submit" name="submit"  value="<?php _e('Update Webinar forms') ?>"/>
 			        </td>
 			    </tr>  
@@ -198,9 +197,9 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 		</table>
 	
 	</div>
-	<?php	
-	} 	
+	<?php		
 	
+	} 	
 	
 	/*ADDING ADMIN MENU FOR SETTINGS*/
 	add_action('admin_menu','gotowp_personal_admin_menu');
@@ -218,14 +217,17 @@ else{
 	
 	function gotowp_personal_enqueue_scripts(){
 		global $post;
-		if( has_shortcode( $post->post_content, 'register_free_webinar') ) {
+		if( gotowp_has_shortcode( 'register_free_webinar') ) {
+			if ( !wp_script_is( 'jquery' ) ) {				
+				wp_enqueue_script('jquery',GOTOWP_PERSONAL_PLUGIN_URL.'assets/js/jquery-1.8.3.min.js');
+			}			
 			wp_enqueue_script( GOTOWP_PERSONAL_PLUGIN_SLUG . '-validate-js', GOTOWP_PERSONAL_PLUGIN_URL.'assets/js/jquery.validate.min.js', array( 'jquery' ), GOTOWP_PERSONAL_PLUGIN_VERSION );
 		}
 	}
 	
 	function gotowp_personal_enqueue_styles(){
 		global $post;
-		if( has_shortcode( $post->post_content, 'register_free_webinar') ) {
+		if( gotowp_has_shortcode( 'register_free_webinar') ) {
 			wp_enqueue_style( GOTOWP_PERSONAL_PLUGIN_SLUG . '-public-style', GOTOWP_PERSONAL_PLUGIN_URL.'assets/css/public.css', array(), GOTOWP_PERSONAL_PLUGIN_VERSION );
 		}
 	}		
@@ -241,7 +243,7 @@ else{
 		{
 			$webinarid=trim(esc_attr($_REQUEST['webinarid']));
 
-		  if(!empty($webinarid) && $webinarid !=''){
+		  if(!empty($webinarid) && $webinarid !='' && gotowp_personal_is_webinar($webinarid)){
 
 			$organizer_key= trim(get_option('gotowp_personal_organizer_key'));
 			$access_token = trim(get_option('gotowp_personal_access_token'));
@@ -253,6 +255,7 @@ else{
 							"Content-Type: application/json",
 							"Authorization: OAuth oauth_token=$access_token",
 						   );
+			
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_POST,0);
 			curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); 
@@ -262,14 +265,19 @@ else{
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			$response= curl_exec($curl);
 			curl_close($curl);
-			$request=json_decode($response);
 			
-			foreach($request as $val)
-			{
-				$emails[]=$val->email;
-			}
+			$registrants=gotowp_personal_json_decode($response);
+						
+			$emails=array();
 			
-			if( in_array($_REQUEST['email'],$emails) )
+			if(count($registrants) > 0){
+				foreach($registrants as $registrant)
+				{
+					$emails[]=$registrant->email;
+				}
+		   }
+						
+			if( is_array($emails) && in_array($_REQUEST['email'],$emails) )
 			{			
 				$webinarErrors->add('broke','This Email is already registered with this webinar');
 			}
@@ -307,7 +315,18 @@ else{
 					
 					foreach($registration_fields->fields as $row):				
 					   $curl_post_data[$row->field]=trim(esc_attr($_POST[$row->field]));				
-					endforeach;				
+					endforeach;			
+
+				 
+
+
+		          $headers=array( 
+						"HTTP/1.1",
+						"Accept: application/json",
+						"Accept: application/vnd.citrix.g2wapi-v1.1+json",
+						"Content-Type: application/json",
+						"Authorization: OAuth oauth_token=$access_token",
+					   );	
 	
 					$myOptions = array( 
 						CURLOPT_POST => true, 
@@ -316,8 +335,9 @@ else{
 						CURLOPT_POSTFIELDS => json_encode($curl_post_data), 
 						CURLOPT_URL => $url, 
 						CURLOPT_RETURNTRANSFER => 1, 
-						CURLOPT_HTTPHEADER => array( "Content-Type: application/json; charset=utf-8","Accept:application/json, text/javascript, */*; q=0.01", ("Authorization: OAuth oauth_token=".$access_token))
+						CURLOPT_HTTPHEADER => $headers
 	                );
+
 					curl_setopt_array($curl, $myOptions);
 					$curl_response = curl_exec($curl);
 					wp_redirect($return_url);exit;
@@ -332,6 +352,78 @@ else{
 
 
 
+function gotowp_personal_is_webinar($webinar_key){
+		
+	if($webinar_key !='' && !empty($webinar_key)){
+		$webinar_response=gotowp_personal_get_webinar($webinar_key);
+
+		if($webinar_response && $webinar_response->webinarKey){
+			return true;
+		}else{
+			return false;
+		}
+		
+	}else{
+		return false;
+	}
+}
+
+
+function gotowp_personal_json_decode($json, $assoc = false, $depth = 512, $options = 0) {
+	// search and remove comments like /* */ and //
+	$json = preg_replace("#(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|([\s\t]//.*)|(^//.*)#", '', $json);
+		
+	if(version_compare(phpversion(), '5.4.0', '>=')) {
+		$json = json_decode($json, $assoc, $depth, $options);
+	}
+	elseif(version_compare(phpversion(), '5.3.0', '>=')) {
+		$json=preg_replace('/("\w+"):(\d+)/', '\\1:"\\2"', $json);
+		$json = json_decode($json, $assoc, $depth);
+	}
+	else {
+		$json=preg_replace('/("\w+"):(\d+)/', '\\1:"\\2"', $json);
+		$json = json_decode($json, $assoc);
+	}
+
+	return $json;
+}
+
+
+function gotowp_has_shortcode( $shortcode) {
+	global $post;
+	$found = false;
+	if(function_exists('has_shortcode'))
+	{
+		if( has_shortcode( $post->post_content, $shortcode) )
+		{
+			$found = TRUE;
+		}
+	}
+	else
+	{
+		if( gotowp_custom_has_shortcode($shortcode) )
+		{
+			$found = TRUE;
+		}
+	}
+	return $found;
+}
+
+
+
+function gotowp_custom_has_shortcode(){
+	global $post;
+	$found = false;
+	if ( ! $shortcode ) {
+		return $found;
+	}
+	if ( stripos( get_the_content(), '[' . $shortcode) !== FALSE ) {
+		$found = TRUE;
+	}
+	return $found;
+}
+
+
 function webinar_get_registration_fields($web_key)
 {
 	$web_key=trim($web_key);
@@ -344,7 +436,7 @@ function webinar_get_registration_fields($web_key)
 			else{
 				$response=webinar_update_registration_fields($web_key);
 			}		
-			$request=json_decode($response);
+			$request=gotowp_personal_json_decode($response);
 			return $request;
         }
 }
@@ -376,7 +468,7 @@ function webinar_update_registration_fields($web_key)
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		$response= curl_exec($curl);
 		curl_close($curl);
-		$response_de=json_decode($response);
+		$response_de=gotowp_personal_json_decode($response);
 		if(isset($response_de->fields)){
 		 update_option( $webinar_option_key, $response, '', 'yes' );
 	   }
@@ -420,7 +512,7 @@ function gotowp_personal_get_webinar($webinarKey){
 			$response=$curl_response;
 		}
 
-		$request=json_decode($response);
+		$request=gotowp_personal_json_decode($response);
 		return $request;
    }else{
    	  return false;
@@ -480,11 +572,13 @@ function gotowp_personal_registration_forms($atts)
 
 	$registration_fields=webinar_get_registration_fields($webid);
 
-	if(!isset($registration_fields->incident)){
+	//print_r($registration_fields);die;
+
+	if(isset($registration_fields->fields) && is_array($registration_fields->fields)){
 
 			$webinar=gotowp_personal_get_webinar($webid);
 
-			if(!isset($webinar->incident)){
+			if(isset($webinar->webinarKey)){
 
 			$subject=$webinar->subject;
 
@@ -550,6 +644,7 @@ function gotowp_personal_registration_forms($atts)
 		         $output.='<tr class="gotowp-email"><td >Email</td><td>';
 		         $output.='<input class="gotowp-input-text required email" type="text" size=20  name="email" id="email" />'; 
 		      }	
+
 
 			$output.='<tr>
 				    <input type="hidden" name="returnpageid"      value="'.$pageid.'" />
