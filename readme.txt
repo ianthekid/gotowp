@@ -4,7 +4,7 @@ Donate link: http://gotowp.com/
 Tags: GoToWebinar, webinar registration, webinars, GoToMeeting wordpress plugin
 Requires at least: 3.2
 Tested up to: 3.8.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ Keys generated through app.gotowp.com are stable for 1 year
 3. screenshot3
 
 == Changelog ==
+
+= 1.1.1 =
+* updated fixed "fixed some code issue"
 
 = 1.1.0 =
 * updated fixed "update to plugin settings page display"
