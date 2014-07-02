@@ -3,7 +3,7 @@
 		Plugin Name: GoToWP Personal
 		Plugin URI: http://www.gotowp.com/
 		Description: Allow your users to easily register for your GoToWebinar webinars by simply placing a shortcode in any Wordpress post or page.
-		Version: 1.1.1
+		Version: 1.1.2
 		Author: GoToWP.com
 		Author URI:  http://www.gotowp.com/
 		Support: http://www.gotowp.com/support
@@ -11,7 +11,7 @@
 
 define('GOTOWP_PERSONAL_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('GOTOWP_PERSONAL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.1.1');
+define('GOTOWP_PERSONAL_PLUGIN_VERSION', '1.1.2');
 define('GOTOWP_PERSONAL_PLUGIN_SLUG', 'gotowp-personal');
 
 $webinarErrors= new WP_Error();
@@ -314,10 +314,26 @@ else{
 					$curl_post_data=array();
 					
 					foreach($registration_fields->fields as $row):				
-					   $curl_post_data[$row->field]=trim(esc_attr($_POST[$row->field]));				
-					endforeach;			
+					   $curl_post_data[$row->field]=$_POST[$row->field];				
+					endforeach;	
 
-				 
+					$responses=array();
+
+					if(isset($registration_fields->questions) && count($registration_fields->questions) > 0){
+						foreach($registration_fields->questions as $row):
+                           $question=array();                                   
+                           $question['questionKey']=$row->questionKey;
+							if(isset($row->answers)){
+		                        $question['answerKey']=$_POST[$row->questionKey];
+							}else{
+								$question['responseText']=$_POST[$row->questionKey];
+							}                     
+						
+						   $responses[]=$question;
+						endforeach;
+
+                       $curl_post_data['responses']=$responses;
+				    }						 
 
 
 		          $headers=array( 
@@ -644,6 +660,40 @@ function gotowp_personal_registration_forms($atts)
 		         $output.='<tr class="gotowp-email"><td >Email</td><td>';
 		         $output.='<input class="gotowp-input-text required email" type="text" size=20  name="email" id="email" />'; 
 		      }	
+		      
+		      
+		      if(isset($registration_fields->questions) && count($registration_fields->questions) > 0){
+		      	foreach($registration_fields->questions as $row): $class='';
+		      
+		      	$label = ucwords(preg_replace('/([a-z])([A-Z])/', '$1 $2', $row->question));		      
+	      
+		      	if($row->required){ $class='required';}
+		      		
+		      	$output.='<tr class="gotowp-'.$row->questionKey.'"><td><label>'.$row->question.':</label>';
+		      
+		      	if(isset($row->answers)){
+		      		$output.='
+				        <select name="'.$row->questionKey.'" id="'.$row->questionKey.'" class="gotowp-select '.$class.'">
+					    <option selected="selected" value="">--Select--</option>';
+		      
+		      		foreach($row->answers as $opt):
+		      		$output.=' <option value="'.$opt->answerKey.'">'.$opt->answer.'</option>';
+		      		endforeach;
+		      
+		      		$output.='</select>';
+		      	}else{
+		      		$output.='<input class="gotowp-input-text '.$class.'" type="text" size=20  name="'.$row->questionKey.'" id="'.$row->questionKey.'" />';
+		      	}
+		      
+		      	$output.='</td></tr>';
+		      
+		      	endforeach;
+		      
+		      }		      
+		      
+		      
+		      
+		      
 
 
 			$output.='<tr>
