@@ -15,10 +15,23 @@
 	#gotowp_personal_sample_table .sample_row .sample_field .shortcode{width:375px;}	
     #gotowp_personal_webinar_forms #update_webinar_forms {   background: none repeat scroll 0 0 #629819;    color: #FFFFFF;    font-weight: bold;    padding: 5px 18px 5px 15px;}	
     .tableborder {    border: 1px solid #56B4EF;    margin-bottom: 15px;}
+    #tab0_content table{width:100%;}
     .tableheader {    background: none repeat scroll 0 0 #007FC8;    color: #FFFFFF;    font-size: 15px;    font-weight: bold;    padding: 5px;}
      tbody {    float: left;    padding: 7px 15px;}
     .wrap form{float: left;width:100%;}
     .wrap .row{}
     .wrap .row .col{}
     .wrap .row .col1{float: left;width:40%;padding:0 40px 0 0;}
-    .wrap .row .col2{}
+    
+.wrap .row .col2 {
+    float: right;
+}
+
+    #gotowp_training_settings .tableclass{width:125px;}
+    
+  .submit_btn {
+    background: none repeat scroll 0 0 #629819;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 5px 18px 5px 15px;
+}
