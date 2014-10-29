@@ -1104,7 +1104,20 @@ function gotowp_personal_registration_forms($atts)
 			$output.='<tbody><tr class="gotowp-date"><td colspan="2" class="date">'.$date_title.'</td></tr>';
 			
 			if(isset($registration_fields->fields) && count($registration_fields->fields) > 0){
-				foreach($registration_fields->fields as $row): $class='';
+
+				$sort_form = $form_fields = array();
+				$sort_fields = array('firstName','lastName','email','phone','jobTitle','organization','industry','state','country','questionsAndComments');
+				foreach($sort_fields as $s_f) {
+					foreach($registration_fields->fields as $row) {
+						$sf_key = array_search($s_f,(array)$row);
+						if($sf_key == "field")
+							array_push($sort_form,$row);
+					}
+
+				}
+
+				foreach($sort_form as $row): $class='';
+
 				if($row->required){ $class='required';}
 				if($row->field=='email'){$class=$class.' email';}
 				
